@@ -44,10 +44,12 @@ namespace Project2___Chess
 
         private static void printBoard(Board myBoard)
         {
+            int rowNum = 0;
             // print the chess  board to the console. Use X for the piece location. + for a legal move. . for empty square
-            Console.WriteLine("---------------------------------");
+            Console.WriteLine(" ---------------------------------");
             for (int i = 0; i < myBoard.Size; i++)
             {
+                Console.Write(rowNum++);
                 Console.Write("|");
                 for (int j = 0; j < myBoard.Size; j++)
                 {
@@ -67,9 +69,10 @@ namespace Project2___Chess
                     }
                 }
                 Console.WriteLine();
-                Console.WriteLine("---------------------------------");
+                Console.WriteLine(" ---------------------------------");
             }
 
+            Console.WriteLine("   0   1   2   3   4   5   6   7  ");
             Console.WriteLine("===================================");
         }
 
