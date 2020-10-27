@@ -9,72 +9,33 @@ namespace Project2___Chess
 {
     class Program
     {
-        static Board myBoard = new Board(8);
+        static Board myBoard = new Board();
 
         static void Main(string[] args)
         {
-            // show the empty chess board
-            printBoard(myBoard);
-
-            // ask the user for an x and y coordinate where we will place a piece
-            Cell currentCell = setCurrentCell();
-            currentCell.currentlyOccupied = true;
-
-            // calculate all legal moves for that piece
-            myBoard.MarkNextLegalMoves(currentCell, "Knight");
-
-            // print the chess board. Use an X for occupied square. Use a + for legal move. Use . for empty cell
-            printBoard(myBoard);
-            // wait for another enter key press before ending the program
-            Console.ReadLine();
-        }
-
-        private static Cell setCurrentCell()
-        {
-            // get x and y coordinates from the user. return a cell location.
-            Console.WriteLine("Enter the current row number");
-            int currentRow = int.Parse(Console.ReadLine());
-
-            Console.WriteLine("Enter the current column number");
-            int currentColumn = int.Parse(Console.ReadLine());
-
-            myBoard.theGrid[currentRow, currentColumn].currentlyOccupied = true;
-            return myBoard.theGrid[currentRow, currentColumn];
-        }
-
-        private static void printBoard(Board myBoard)
-        {
-            int rowNum = 0;
-            // print the chess  board to the console. Use X for the piece location. + for a legal move. . for empty square
-            Console.WriteLine(" ---------------------------------");
-            for (int i = 0; i < myBoard.Size; i++)
+            do
             {
-                Console.Write(rowNum++);
-                Console.Write("|");
-                for (int j = 0; j < myBoard.Size; j++)
-                {
-                    Cell c = myBoard.theGrid[i, j];
+                //display the current state of the gameboard
+                myBoard.display();
+                //have the user select the piece they would like to move. this will check if they select a cell not on the board,
+                // a cell without a piece, and a piece that is not theirs.
+                myBoard.selectPiece();
+                //have the user select where they would like to move their piece. this will check if they select a cell that is
+                //not on the board, a cell that is occupied by their own piece, and if that particurlar piece can move to that cell.
+                //THIS NEEDS THE THIRD CHECK IMPLIMENTED
+                myBoard.selectDestination();
+                //moves the piece on the gameboard. This will destroy a peice that was there. output is displayed for no destruction 
+                //as well.
+                myBoard.movePiece();
+                //toggles whos turn it is on the gameboard.
+                myBoard.nextTurn();
 
-                    if (c.currentlyOccupied == true)
-                    {
-                        Console.Write(" X |");
-                    }
-                    else if (c.legalNextMove == true)
-                    {
-                        Console.Write(" + |");
-                    }
-                    else
-                    {
-                        Console.Write("   |");
-                    }
-                }
-                Console.WriteLine();
-                Console.WriteLine(" ---------------------------------");
-            }
+                //THIS NEEDS TO BE IMPLIMENTED
+                //this will check if the game is over.
+            } while (!myBoard.gameOver());
 
-            Console.WriteLine("   0   1   2   3   4   5   6   7  ");
-            Console.WriteLine("===================================");
+            //THIS NEEDS TO BE IMPLIMENTED
+            myBoard.printWinner(); 
         }
-
     }
 }
