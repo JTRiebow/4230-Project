@@ -1,21 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChessBoard
+﻿namespace ChessBoardModel
 {
     public class Cell
     {
-        public int rowNumber { get; set; }
-        public int columnNumber { get; set; }
+        private Piece OccupiedBy;
+        public int row { get; set; }
+        public int column { get; set; }
         public bool currentlyOccupied { get; set; }
         public bool legalNextMove { get; set; }
+        public Piece occupiedBy {
+            get => OccupiedBy;
+            set
+            {
+                OccupiedBy = value;
+                if (value == null)
+                {
+                    currentlyOccupied = false;
+                }
+                else
+                {
+                    currentlyOccupied = true;
+                }
+            } 
+        }
 
 
         public Cell(int x, int y)
         {
-            rowNumber = x;
-            columnNumber = y;
+            row = x;
+            column = y;
         }
     }
 }
