@@ -20,6 +20,7 @@
             return true;
             //NEED TO IMPLIMENT
             //based off the piece symbol, current location and input location to move return bool if it is allowed.
+            //
         }
         public Piece(int row, int column, char symbol, Team team)
         {
