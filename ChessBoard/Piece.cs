@@ -5,15 +5,6 @@ namespace ChessBoardModel
 {
     public class Piece
     {
-        //Dictionary<char, int[][]> validMoves = new Dictionary<char, int[][]>()
-        //{
-        //    {'r', new int[,]{ { 1, 2 }, { } } },
-        //    {'k', new int[,]{ { 1, 2 }, { } } },
-        //    {'b', new int[,]{ { 1, 2 }, { } } },
-        //    {'q', new int[,]{ { 1, 2 }, { } } },
-        //    {'x', new int[,]{ { 1, 2 }, { } } },
-        //    {'p', new int[,]{ { 1, 1 }, { } } },
-        //};
         private char Symbol;
         public int row { get; set; }
         public int column { get; set; }
@@ -25,7 +16,20 @@ namespace ChessBoardModel
             }
             set => Symbol = value; 
         }
-        public string name { get; set; }
+        public string name {
+            get
+            {
+                switch (Symbol) {
+                    case 'p': return "Pawn";
+                    case 'r': return "Rook";
+                    case 'k': return "Knight";
+                    case 'b': return "Bishop";
+                    case 'q': return "Queen";
+                    case 'x': return "King";
+                    default: return "Unknown";
+                }
+            }
+        }
         public Team team { get; set; }
         public bool canMoveTo(int row, int column)
         {

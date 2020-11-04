@@ -6,7 +6,6 @@
         public int row { get; set; }
         public int column { get; set; }
         public bool currentlyOccupied { get; set; }
-        //public bool legalNextMove { get; set; }
         public Piece occupiedBy {
             get => OccupiedBy;
             set
@@ -22,8 +21,10 @@
                 }
             } 
         }
-
-
+        public override string ToString()
+        {
+            return $"{row},{column}";
+        }
         public Cell(int x, int y)
         {
             row = x;
