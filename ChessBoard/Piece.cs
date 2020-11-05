@@ -6,6 +6,7 @@ namespace ChessBoardModel
     public class Piece
     {
         private char Symbol;
+
         public int row { get; set; }
         public int column { get; set; }
         public char symbol {
@@ -31,17 +32,13 @@ namespace ChessBoardModel
             }
         }
         public Team team { get; set; }
-        public bool canMoveTo(int row, int column)
+        public bool canMoveTo(int row, int column, char cellTaken, char pieceInPath)
         {
-            //Console.WriteLine(this.symbol);
-            //return true;
-            //NEED TO IMPLIMENT
-            //based off the piece symbol, current location and input location to move return bool if it is allowed.
-            //
-            //return true;
-
+            if(pieceInPath == 't')
+            {
+                return false;
+            }
             bool isValidMove = false;
-
             //return true;
 
             switch (Char.ToLower(this.symbol))
@@ -112,16 +109,47 @@ namespace ChessBoardModel
                     //Pawn: One - tep(Vertical) and can go One-Step(Diagonal) to eliminate another piece.
                     if (this.team == Team.White)
                     {
-                        if (this.column + 1 == column)
+                        if (cellTaken == 't')
                         {
+                            if (this.row + 1 == row)
+                            {
+
+                                isValidMove = true;
+                                break;
+                            }
+                            else if (this.row - 1 == row)
+                            {
+                                isValidMove = true;
+                                break;
+                            }
+                            break;
+                        }
+                        else if (this.column + 1 == column) {
+
                             isValidMove = true;
                             break;
                         }
                         else
                             break;
                     }
+
                     else
                     {
+                        if (cellTaken == 't')
+                        {
+                            if (this.row + 1 == row)
+                            {
+
+                                isValidMove = true;
+                                break;
+                            }
+                            else if (this.row - 1 == row)
+                            {
+                                isValidMove = true;
+                                break;
+                            }
+                            break;
+                        }
                         if (this.column - 1 == column)
                         {
                             isValidMove = true;

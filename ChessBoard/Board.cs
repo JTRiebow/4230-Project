@@ -184,6 +184,257 @@ namespace ChessBoard
                 {
                     row = int.Parse(input.Split(',')[0]);
                     column = int.Parse(input.Split(',')[1]);
+                    char cellTaken = 't';
+                    if (grid[row, column].occupiedBy == null)
+                    {
+                        cellTaken = 'f';
+                    }
+
+                    char pieceInPath = 'f';
+                    switch (Char.ToLower(selectedPiece.symbol))
+                    {
+                        case 'r':
+
+                            if(selectedPiece.row != row)
+                            {
+                                if(selectedPiece.row < row)
+                                {
+                                    for (int i = selectedPiece.row + 1; i < row; i++)
+                                    {
+                                        if (grid[i, column].occupiedBy != null)
+                                        {
+                                            pieceInPath = 't';
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = selectedPiece.row + 1; i < row; i--)
+                                    {
+                                        if (grid[i, column].occupiedBy != null)
+                                        {
+                                            pieceInPath = 't';
+                                            break;
+                                        }
+                                    }
+                                }
+
+                            }
+                            else if (selectedPiece.column != column)
+                            {
+                                if (selectedPiece.column < column)
+                                {
+                                    for (int i = selectedPiece.column + 1; i < column; i++)
+                                    {
+                                        if (grid[row, i].occupiedBy != null)
+                                        {
+                                            pieceInPath = 't';
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = selectedPiece.column  -1; i > column; i--)
+                                    {
+                                        if (grid[row, i].occupiedBy != null)
+                                        {
+                                            pieceInPath = 't';
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                            break;
+
+                        case 'b':
+
+                            if (selectedPiece.row != row)
+                            {
+                                if (selectedPiece.symbol == 'b')
+                                {
+                                    if (selectedPiece.row < row)
+                                    {
+                                        int j = selectedPiece.column + 1;
+                                        for (int i = selectedPiece.row + 1; i < row; j++, i++)
+                                        {
+                                            if (grid[i, j].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int j = selectedPiece.column + 1;
+                                        for (int i = selectedPiece.row - 1; i > row; j++, i--)
+                                        {
+                                            if (grid[i, j].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (selectedPiece.row < row)
+                                    {
+                                        int j = selectedPiece.column - 1;
+                                        for (int i = selectedPiece.row + 1; i < row; j--, i++)
+                                        {
+                                            if (grid[i, j].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int j = selectedPiece.column - 1;
+                                        for (int i = selectedPiece.row - 1; i > row; j--, i--)
+                                        {
+                                            if (grid[i, j].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+
+                            break;
+
+                        case 'q':
+                            if (selectedPiece.row < row && selectedPiece.column < column)
+                            {
+                                int j = selectedPiece.column + 1;
+                                for (int i = selectedPiece.row + 1; i < row; j++, i++)
+                                {
+                                    if (grid[i, j].occupiedBy != null)
+                                    {
+                                        pieceInPath = 't';
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (selectedPiece.row > row && selectedPiece.column < column)
+                            {
+                                int j = selectedPiece.column + 1;
+                                for (int i = selectedPiece.row - 1; i > row; j++, i--)
+                                {
+                                    if (grid[i, j].occupiedBy != null)
+                                    {
+                                        pieceInPath = 't';
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (selectedPiece.row > row && selectedPiece.column > column)
+                            {
+                                int j = selectedPiece.column - 1;
+                                for (int i = selectedPiece.row - 1; i > row; j--, i--)
+                                {
+                                    if (grid[i, j].occupiedBy != null)
+                                    {
+                                        pieceInPath = 't';
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (selectedPiece.row > row && selectedPiece.column < column)
+                            {
+                                int j = selectedPiece.column - 1;
+                                for (int i = selectedPiece.row + 1; i < row; j--, i++)
+                                {
+                                    if (grid[i, j].occupiedBy != null)
+                                    {
+                                        pieceInPath = 't';
+                                        break;
+                                    }
+
+                                }
+                            }
+                            //make sure there was a change in movement
+                            else if(selectedPiece.row == row && selectedPiece.column == column)
+                            {
+                                pieceInPath = 't';
+                                break;
+                            }
+                            else
+                            {
+
+                                if (selectedPiece.row != row)
+                                {
+                                    if (selectedPiece.row < row)
+                                    {
+                                        for (int i = selectedPiece.row + 1; i < row; i++)
+                                        {
+                                            if (grid[i, column].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int i = selectedPiece.row + 1; i < row; i--)
+                                        {
+                                            if (grid[i, column].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                }
+                                else if (selectedPiece.column != column)
+                                {
+                                    if (selectedPiece.column < column)
+                                    {
+                                        for (int i = selectedPiece.column + 1; i < column; i++)
+                                        {
+                                            if (grid[row, i].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int i = selectedPiece.column + 1; i < column; i--)
+                                        {
+                                            if (grid[row, i].occupiedBy != null)
+                                            {
+                                                pieceInPath = 't';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+
+
+
+
+                    }
+
+
+
+
 
                     //have the user select where they would like to move their piece. this will check if they select a cell that is
                     //not on the board, a cell that is occupied by their own piece, and if that particurlar piece can move to that cell.
@@ -193,7 +444,7 @@ namespace ChessBoard
                         selectionIsValid = false;
                         Console.WriteLine("That cell does not exist on the gameboard. Try again.");
                     }
-                    else if (!selectedPiece.canMoveTo(row, column))
+                    else if (!selectedPiece.canMoveTo(row, column, cellTaken, pieceInPath))
                     {
                         selectionIsValid = false;
                         Console.WriteLine("That is not a valid move for that piece. Try again.");
