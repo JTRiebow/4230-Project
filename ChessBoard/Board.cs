@@ -1,21 +1,47 @@
 ﻿using ChessBoardModel;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Net.Security;
 
 namespace ChessBoard
 {
     public partial class Board
     {
-        // the SIZE of the board will usually be 8x8
         public const int SIZE = 8;
         public Team turn { get; set; }
         public Cell[,] grid { get; set; }
         public Piece selectedPiece { get; set; }
         public Cell selectedDestination { get; set; }
+        public List<Piece> PiecesOnBoard = new List<Piece>();
 
         public bool bKingDied = false;
         public bool wKingDied = false;
+
+        public void displayTurn()
+        {
+            Console.WriteLine($"{turn.ToString()}'s turn");
+        }
+
+        public void testForCheck()
+        {
+            Piece whiteKing = PiecesOnBoard.Find(p => p.symbol == 'x');
+            Piece blackKing = PiecesOnBoard.Find(p => p.symbol == 'X');
+            //for each piece left on the board test to see if they can capture the opposing king.
+            foreach (Piece piece in PiecesOnBoard)
+            {
+                if (piece.team == Team.Black)
+                {
+                    if(piece.canMoveTo(whiteKing.row,whiteKing.column)) Console.WriteLine("White is in check.");
+                } 
+                else if (piece.team == Team.White)
+                {
+                    if (piece.canMoveTo(blackKing.row, blackKing.column)) Console.WriteLine("Black is in check.");
+                }
+            }
+        }
+
         //Constructor
         public Board()
         {
@@ -33,37 +59,41 @@ namespace ChessBoard
                     grid[i, j] = new Cell(i, j);
                 }
             }
-
+            Piece addedPiece1 = null, addedPiece2 = null, addedPiece3 = null, addedPiece4 = null;
             for (int i = 0; i < SIZE; i++)
             {
                 switch (i)
                 {
                     case 0:
                     case 7:
-                        grid[i, 0].occupiedBy = new Piece(i, 0, 'r', Team.White);
-                        grid[i, 7].occupiedBy = new Piece(i, 7, 'r', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'r', Team.White);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'r', Team.Black);
                         break;
                     case 1:
                     case 6:
-                        grid[i, 0].occupiedBy = new Piece(i, 0, 'k', Team.White);
-                        grid[i, 7].occupiedBy = new Piece(i, 7, 'k', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'k', Team.White);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'k', Team.Black);
                         break;
                     case 2:
                     case 5:
-                        grid[i, 0].occupiedBy = new Piece(i, 0, 'b', Team.White);
-                        grid[i, 7].occupiedBy = new Piece(i, 7, 'b', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'b', Team.White);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'b', Team.Black);
                         break;
                     case 3:
-                        grid[i, 0].occupiedBy = new Piece(i, 0, 'q', Team.White);
-                        grid[i, 7].occupiedBy = new Piece(i, 7, 'q', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'q', Team.White);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'q', Team.Black);
                         break;
                     case 4:
-                        grid[i, 0].occupiedBy = new Piece(i, 0, 'x', Team.White);
-                        grid[i, 7].occupiedBy = new Piece(i, 7, 'x', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'x', Team.White);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'x', Team.Black);
                         break;
                 }
-                grid[i, 1].occupiedBy = new Piece(i, 1, 'p', Team.White);
-                grid[i, 6].occupiedBy = new Piece(i, 6, 'p', Team.Black);
+                addedPiece3 = grid[i, 1].occupiedBy = new Piece(i, 1, 'p', Team.White);
+                addedPiece4 = grid[i, 6].occupiedBy = new Piece(i, 6, 'p', Team.Black);
+                PiecesOnBoard.Add(addedPiece1);
+                PiecesOnBoard.Add(addedPiece2);
+                PiecesOnBoard.Add(addedPiece3);
+                PiecesOnBoard.Add(addedPiece4);
             }
         }
 
@@ -433,26 +463,13 @@ namespace ChessBoard
         {
             if (selectedDestination.currentlyOccupied)
             {
-                //if selected dest is king game over
-                //if black king dies white wins
-                if (selectedDestination.occupiedBy.symbol == 'k' && selectedDestination.occupiedBy.team == Team.Black)
-                {
-                    bKingDied = true;
-                }
-               else if (selectedDestination.occupiedBy.symbol == 'k' && selectedDestination.occupiedBy.team == Team.White)
-                {
-                    wKingDied = true;
-                }
-                else
-                {
-                    bKingDied = false;
-                    wKingDied = false;
-                }
-                Console.WriteLine("You destroyed your enemy. Good Job.");
+                Console.WriteLine($"You captured the enemy {selectedDestination.occupiedBy.name}. Good Job.");
+                PiecesOnBoard.Remove(PiecesOnBoard.Find(p => p.row == selectedDestination.row && p.column == selectedDestination.column));
             }
             else
             {
                 Console.WriteLine($"You move your {selectedPiece.name} to {selectedDestination.ToString()}");
+                //need to override the tostring method.
             }
             grid[selectedDestination.row, selectedDestination.column].occupiedBy = selectedPiece;
             grid[selectedPiece.row, selectedPiece.column].occupiedBy = null;
@@ -474,207 +491,13 @@ namespace ChessBoard
 
         public bool gameOver()
         {
-            //THIS NEEDS TO BE IMPLIMENTED
-
-            //black wins && game is over
-            if (wKingDied == true )
-            {
-
-                return true;
-            }
-            //white wins andd game is over
-            else if (bKingDied == true)
-            {
-                return true;
-            }
-
-
-
-            else
-            {
-                return false;
-            }
-            //return false;
+            if (PiecesOnBoard.FindAll(p => p.name == "King").Count() == 2) return false;
+            return true;
         }
 
         public void printWinner()
         {
-            //print who the winner of the game is.
-            //black is winner
-
-            //if king is alive 
-            if (wKingDied == true)
-            {
-
-                Console.WriteLine("The winner is the player with the black pieces.");
-            }
-            //white is winner
-            else if (bKingDied == true)
-            {
-                Console.WriteLine("The winner is the player with the white pieces. ");
-            }
-
+            Console.WriteLine($"{PiecesOnBoard.Find(p => p.name == "King").team} team wins!");
         }
     }
 }
-
-//        public void MarkNextLegalMoves( Cell currentCell, string chessPiece)
-//        {
-//            // step 1 - clear all previous legal moves
-//            for (int i = 0; i < SIZE; i++)
-//            {
-//                for (int j = 0; j < SIZE; j++)
-//                {
-//                    grid[i, j].legalNextMove = false;
-//                    grid[i, j].currentlyOccupied = false;
-//                }
-//            }
-
-//            //step 2 - find all legal moves and mark the cells as "legal"
-//            switch (chessPiece)
-//            {
-//                case "Knight":
-//                    grid[currentCell.row + 2, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column + 2].legalNextMove = true;
-//                    break;
-//                case "King":
-//                    grid[currentCell.row + 1, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column + 1].legalNextMove = true;
-//                    break;
-//                case "Queen":
-//                    grid[currentCell.row + 1, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 3, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 4, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 5, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 6, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 7, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 3, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 4, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 5, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 6, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 7, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 3].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 4].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 5].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 6].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 7].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 3].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 4].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 5].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 6].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 7].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row + 3, currentCell.column + 3].legalNextMove = true;
-//                    grid[currentCell.row + 4, currentCell.column + 4].legalNextMove = true;
-//                    grid[currentCell.row + 5, currentCell.column + 5].legalNextMove = true;
-//                    grid[currentCell.row + 6, currentCell.column + 6].legalNextMove = true;
-//                    grid[currentCell.row + 7, currentCell.column + 7].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row - 3, currentCell.column - 3].legalNextMove = true;
-//                    grid[currentCell.row - 4, currentCell.column - 4].legalNextMove = true;
-//                    grid[currentCell.row - 5, currentCell.column - 5].legalNextMove = true;
-//                    grid[currentCell.row - 6, currentCell.column - 6].legalNextMove = true;
-//                    grid[currentCell.row - 7, currentCell.column - 7].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row - 3, currentCell.column + 3].legalNextMove = true;
-//                    grid[currentCell.row - 4, currentCell.column + 4].legalNextMove = true;
-//                    grid[currentCell.row - 5, currentCell.column + 5].legalNextMove = true;
-//                    grid[currentCell.row - 6, currentCell.column + 6].legalNextMove = true;
-//                    grid[currentCell.row - 7, currentCell.column + 7].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row + 3, currentCell.column - 3].legalNextMove = true;
-//                    grid[currentCell.row + 4, currentCell.column - 4].legalNextMove = true;
-//                    grid[currentCell.row + 5, currentCell.column - 5].legalNextMove = true;
-//                    grid[currentCell.row + 6, currentCell.column - 6].legalNextMove = true;
-//                    grid[currentCell.row + 7, currentCell.column - 7].legalNextMove = true;
-//                    break;
-//                case "Rook":
-//                    grid[currentCell.row + 1, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 3, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 4, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 5, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 6, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row + 7, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 3, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 4, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 5, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 6, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row - 7, currentCell.column].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 3].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 4].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 5].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 6].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column + 7].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 3].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 4].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 5].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 6].legalNextMove = true;
-//                    grid[currentCell.row, currentCell.column - 7].legalNextMove = true;
-//                    break;
-//                case "Bishop":
-//                    grid[currentCell.row + 1, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row + 3, currentCell.column + 3].legalNextMove = true;
-//                    grid[currentCell.row + 4, currentCell.column + 4].legalNextMove = true;
-//                    grid[currentCell.row + 5, currentCell.column + 5].legalNextMove = true;
-//                    grid[currentCell.row + 6, currentCell.column + 6].legalNextMove = true;
-//                    grid[currentCell.row + 7, currentCell.column + 7].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row - 3, currentCell.column - 3].legalNextMove = true;
-//                    grid[currentCell.row - 4, currentCell.column - 4].legalNextMove = true;
-//                    grid[currentCell.row - 5, currentCell.column - 5].legalNextMove = true;
-//                    grid[currentCell.row - 6, currentCell.column - 6].legalNextMove = true;
-//                    grid[currentCell.row - 7, currentCell.column - 7].legalNextMove = true;
-//                    grid[currentCell.row - 1, currentCell.column + 1].legalNextMove = true;
-//                    grid[currentCell.row - 2, currentCell.column + 2].legalNextMove = true;
-//                    grid[currentCell.row - 3, currentCell.column + 3].legalNextMove = true;
-//                    grid[currentCell.row - 4, currentCell.column + 4].legalNextMove = true;
-//                    grid[currentCell.row - 5, currentCell.column + 5].legalNextMove = true;
-//                    grid[currentCell.row - 6, currentCell.column + 6].legalNextMove = true;
-//                    grid[currentCell.row - 7, currentCell.column + 7].legalNextMove = true;
-//                    grid[currentCell.row + 1, currentCell.column - 1].legalNextMove = true;
-//                    grid[currentCell.row + 2, currentCell.column - 2].legalNextMove = true;
-//                    grid[currentCell.row + 3, currentCell.column - 3].legalNextMove = true;
-//                    grid[currentCell.row + 4, currentCell.column - 4].legalNextMove = true;
-//                    grid[currentCell.row + 5, currentCell.column - 5].legalNextMove = true;
-//                    grid[currentCell.row + 6, currentCell.column - 6].legalNextMove = true;
-//                    grid[currentCell.row + 7, currentCell.column - 7].legalNextMove = true;
-//                    break;
-//                default:
-//                    break;
-//            }
-//            grid[currentCell.row, currentCell.column].currentlyOccupied = true;
-//        }
-//    }
-//}
