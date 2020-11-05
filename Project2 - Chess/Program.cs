@@ -27,6 +27,8 @@ namespace Project2___Chess
                 //moves the piece on the gameboard. This will destroy a peice that was there. output is displayed for no destruction 
                 //as well.
                 myBoard.movePiece();
+                //this checks to see if any pawns have qualified for a promotion to queen
+                myBoard.pawnPromotion();
                 //toggles whos turn it is on the gameboard.
                 myBoard.nextTurn();
 
