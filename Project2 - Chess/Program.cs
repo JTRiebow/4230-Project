@@ -33,6 +33,9 @@ namespace Project2___Chess
                 //move the piece and update the gameboard.
                 myBoard.movePiece();
 
+                //this checks to see if any pawns have qualified for a promotion to queen
+                myBoard.pawnPromotion();
+
                 //toggles whos turn it is on the gameboard.
                 myBoard.nextTurn();
 

@@ -125,6 +125,7 @@ namespace ChessBoard
 
             Console.WriteLine("   0   1   2   3   4   5   6   7  ");
             Console.WriteLine("===================================");
+            Console.WriteLine($"It is the {turn.ToString()} team's turn.");
         }
 
         public void selectPiece()
@@ -468,6 +469,8 @@ namespace ChessBoard
             }
             else
             {
+                Console.WriteLine($"You move your {selectedPiece.symbol} to {selectedDestination.row},{selectedDestination.column}");
+
                 Console.WriteLine($"You move your {selectedPiece.name} to {selectedDestination.ToString()}");
                 //need to override the tostring method.
             }
@@ -498,6 +501,29 @@ namespace ChessBoard
         public void printWinner()
         {
             Console.WriteLine($"{PiecesOnBoard.Find(p => p.name == "King").team} team wins!");
+        }
+
+        // This function checks to see if any pawns have reached the edge of the opposing side's board.
+        // If so, it automatically promotes the pawn to a queen.
+        public void pawnPromotion()
+        {
+            for (int i = 0; i < SIZE; i++)
+            {
+                if (grid[i, 0].occupiedBy != null)
+                {
+                    if (grid[i, 0].occupiedBy.symbol == 'P')
+                    {
+                        grid[i, 0].occupiedBy.symbol = 'Q';
+                    }
+                }
+                if (grid[i, 7].occupiedBy != null)
+                {
+                    if (grid[i, 7].occupiedBy.symbol == 'p')
+                    {
+                        grid[i, 7].occupiedBy.symbol = 'q';
+                    }
+                }
+            }
         }
     }
 }
