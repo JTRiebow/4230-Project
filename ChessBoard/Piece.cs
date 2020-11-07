@@ -5,7 +5,6 @@ namespace ChessBoardModel
 {
     public class Piece
     {
-
         private char Symbol;
 
         public int row { get; set; }
@@ -18,7 +17,20 @@ namespace ChessBoardModel
             }
             set => Symbol = value; 
         }
-        public string name { get; set; }
+        public string name {
+            get
+            {
+                switch (Symbol) {
+                    case 'p': return "Pawn";
+                    case 'r': return "Rook";
+                    case 'k': return "Knight";
+                    case 'b': return "Bishop";
+                    case 'q': return "Queen";
+                    case 'x': return "King";
+                    default: return "Unknown";
+                }
+            }
+        }
         public Team team { get; set; }
         public bool canMoveTo(int row, int column, char cellTaken, char pieceInPath)
         {

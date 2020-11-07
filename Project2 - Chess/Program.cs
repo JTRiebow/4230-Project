@@ -15,29 +15,37 @@ namespace Project2___Chess
         {
             do
             {
-                //display the current state of the gameboard
+                //display the current state of the gameboard.
                 myBoard.display();
-                //have the user select the piece they would like to move. this will check if they select a cell not on the board,
-                // a cell without a piece, and a piece that is not theirs.
+
+                //display whos turn it is.
+                myBoard.displayTurn();
+
+                //display if there is a king in check.
+                myBoard.testForCheck();
+
+                //select a piece to move.
                 myBoard.selectPiece();
-                //have the user select where they would like to move their piece. this will check if they select a cell that is
-                //not on the board, a cell that is occupied by their own piece, and if that particurlar piece can move to that cell.
-                //THIS NEEDS THE THIRD CHECK IMPLIMENTED
+
+                //select the destination to move to.
                 myBoard.selectDestination();
-                //moves the piece on the gameboard. This will destroy a peice that was there. output is displayed for no destruction 
-                //as well.
+
+                //move the piece and update the gameboard.
                 myBoard.movePiece();
+
                 //this checks to see if any pawns have qualified for a promotion to queen
                 myBoard.pawnPromotion();
+
                 //toggles whos turn it is on the gameboard.
                 myBoard.nextTurn();
 
-                //THIS NEEDS TO BE IMPLIMENTED
-                //this will check if the game is over.
+
+                //check if the game is over and if it is not loop.
             } while (!myBoard.gameOver());
 
-            //THIS NEEDS TO BE IMPLIMENTED
-            myBoard.printWinner(); 
+            //print out who the winner is
+            myBoard.printWinner();
+            Console.ReadKey();
         }
     }
 }
