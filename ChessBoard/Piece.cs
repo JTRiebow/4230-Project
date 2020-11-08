@@ -32,7 +32,7 @@ namespace ChessBoardModel
             }
         }
         public Team team { get; set; }
-        public bool canMoveTo(int row, int column, char cellTaken, char pieceInPath)
+        public bool canMoveTo(int row, int column, char pieceInPath, char cellTaken)
         {
             if(pieceInPath == 't')
             {

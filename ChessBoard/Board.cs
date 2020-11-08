@@ -33,11 +33,11 @@ namespace ChessBoard
             {
                 if (piece.team == Team.Black)
                 {
-                    if(piece.canMoveTo(whiteKing.row,whiteKing.column)) Console.WriteLine("White is in check.");
+                    if(piece.canMoveTo(whiteKing.row,whiteKing.column, 'f', 'f')) Console.WriteLine("White is in check.");
                 } 
                 else if (piece.team == Team.White)
                 {
-                    if (piece.canMoveTo(blackKing.row, blackKing.column)) Console.WriteLine("Black is in check.");
+                    if (piece.canMoveTo(blackKing.row, blackKing.column, 'f', 'f')) Console.WriteLine("Black is in check.");
                 }
             }
         }
@@ -185,11 +185,7 @@ namespace ChessBoard
                 {
                     row = int.Parse(input.Split(',')[0]);
                     column = int.Parse(input.Split(',')[1]);
-                    char cellTaken = 't';
-                    if (grid[row, column].occupiedBy == null)
-                    {
-                        cellTaken = 'f';
-                    }
+
 
                     char pieceInPath = 'f';
                     switch (Char.ToLower(selectedPiece.symbol))
@@ -445,7 +441,12 @@ namespace ChessBoard
                         selectionIsValid = false;
                         Console.WriteLine("That cell does not exist on the gameboard. Try again.");
                     }
-                    else if (!selectedPiece.canMoveTo(row, column, cellTaken, pieceInPath))
+                    else if (grid[row, column].occupiedBy != null)
+                    {
+                        selectionIsValid = false;
+                        Console.WriteLine("That is not a valid move for that piece. Try again.");
+                    }
+                    else if (!selectedPiece.canMoveTo(row, column, pieceInPath, 'f'))
                     {
                         selectionIsValid = false;
                         Console.WriteLine("That is not a valid move for that piece. Try again.");
