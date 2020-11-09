@@ -33,25 +33,27 @@ namespace ChessBoard
             {
                 if (piece.team == Team.Black)
                 {
-                    if(piece.canMoveTo(whiteKing.row,whiteKing.column)) Console.WriteLine("White is in check.");
+                    if (piece.canMoveTo(whiteKing.row, whiteKing.column))
+                    {
+                        Console.WriteLine("White is in check.");
+                    }
                 } 
                 else if (piece.team == Team.White)
                 {
-                    if (piece.canMoveTo(blackKing.row, blackKing.column)) Console.WriteLine("Black is in check.");
+                    if (piece.canMoveTo(blackKing.row, blackKing.column))
+                    {
+                        Console.WriteLine("Black is in check.");
+                    }
                 }
             }
         }
 
-        //Constructor
         public Board()
         {
-            // initialize SIZE of the board is defined by s.
             turn = Team.White;
 
-            // create a new 2D array of type Cell 
             grid = new Cell[SIZE, SIZE];
 
-            // fill the 2D array with new Cells, each with unique x and y coordinates
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
@@ -66,30 +68,30 @@ namespace ChessBoard
                 {
                     case 0:
                     case 7:
-                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'r', Team.White);
-                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'r', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'r', Team.White, this);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'r', Team.Black, this);
                         break;
                     case 1:
                     case 6:
-                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'k', Team.White);
-                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'k', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'k', Team.White, this);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'k', Team.Black, this);
                         break;
                     case 2:
                     case 5:
-                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'b', Team.White);
-                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'b', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'b', Team.White, this);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'b', Team.Black, this);
                         break;
                     case 3:
-                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'q', Team.White);
-                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'q', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'q', Team.White, this);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'q', Team.Black, this);
                         break;
                     case 4:
-                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'x', Team.White);
-                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'x', Team.Black);
+                        addedPiece1 = grid[i, 0].occupiedBy = new Piece(i, 0, 'x', Team.White, this);
+                        addedPiece2 = grid[i, 7].occupiedBy = new Piece(i, 7, 'x', Team.Black, this);
                         break;
                 }
-                addedPiece3 = grid[i, 1].occupiedBy = new Piece(i, 1, 'p', Team.White);
-                addedPiece4 = grid[i, 6].occupiedBy = new Piece(i, 6, 'p', Team.Black);
+                addedPiece3 = grid[i, 1].occupiedBy = new Piece(i, 1, 'p', Team.White, this);
+                addedPiece4 = grid[i, 6].occupiedBy = new Piece(i, 6, 'p', Team.Black, this);
                 PiecesOnBoard.Add(addedPiece1);
                 PiecesOnBoard.Add(addedPiece2);
                 PiecesOnBoard.Add(addedPiece3);
@@ -100,7 +102,6 @@ namespace ChessBoard
         public void display()
         {
             int rowNum = 0;
-            // print the chess  board to the console. Use X for the piece location. + for a legal move. . for empty square
             Console.WriteLine(" ---------------------------------");
             for (int i = 0; i < SIZE; i++)
             {
@@ -166,15 +167,16 @@ namespace ChessBoard
             selectedPiece = grid[row, column].occupiedBy;
         }
 
-        public void selectDestination()
+        public bool selectDestination()
         {
             bool selectionIsValid;
             int row = 0, column = 0;
             do
             {
                 selectionIsValid = true;
-                Console.WriteLine("Where would you like to move your piece? Ex: 2,3");
+                Console.WriteLine("Where would you like to move your piece? Ex: 2,3. If you would like to change the selected piece enter \"change\"");
                 string input = Console.ReadLine();
+                if (input == "change") return true;
                 if (input.Split(',').Length != 2)
                 {
                     Console.WriteLine("Unrecognizeable input. Please check your format, and try again.");
@@ -184,9 +186,6 @@ namespace ChessBoard
                 {
                     row = int.Parse(input.Split(',')[0]);
                     column = int.Parse(input.Split(',')[1]);
-
-                    //have the user select where they would like to move their piece. this will check if they select a cell that is
-                    //not on the board, a cell that is occupied by their own piece, and if that particurlar piece can move to that cell.
 
                     if (row >= SIZE || column >= SIZE || row < 0 || column < 0)
                     {
@@ -206,6 +205,7 @@ namespace ChessBoard
                 }
             } while (!selectionIsValid);
             selectedDestination = grid[row, column];
+            return false;
         }
 
         public void movePiece()
@@ -218,7 +218,6 @@ namespace ChessBoard
             else
             {
                 Console.WriteLine($"You move your {selectedPiece.name} to {selectedDestination.ToString()}");
-                //need to override the tostring method.
             }
             grid[selectedDestination.row, selectedDestination.column].occupiedBy = selectedPiece;
             grid[selectedPiece.row, selectedPiece.column].occupiedBy = null;
@@ -247,6 +246,18 @@ namespace ChessBoard
         public void printWinner()
         {
             Console.WriteLine($"{PiecesOnBoard.Find(p => p.name == "King").team} team wins!");
+        }
+        public void pawnPromotion()
+        {
+            List<Piece> pawnsToPromote = PiecesOnBoard.Where(
+                p => char.ToLower(p.symbol) == 'p' &&
+                ((p.team == Team.White && p.column == SIZE -1) || (p.team == Team.Black && p.column == 0)))
+                .ToList();
+
+            foreach (Piece piece in pawnsToPromote)
+            {
+                piece.symbol = 'q';
+            }
         }
     }
 }

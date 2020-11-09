@@ -1,10 +1,14 @@
-﻿using System;
+﻿using ChessBoard;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace ChessBoardModel
 {
     public class Piece
     {
+        private Board gameBoard;
         private char Symbol;
         public int row { get; set; }
         public int column { get; set; }
@@ -14,7 +18,7 @@ namespace ChessBoardModel
                 if (team == Team.Black) return char.ToUpper(Symbol);
                 return Symbol;
             }
-            set => Symbol = value; 
+            set => Symbol = char.ToLower(value); 
         }
         public string name {
             get
@@ -31,114 +35,101 @@ namespace ChessBoardModel
             }
         }
         public Team team { get; set; }
-        public bool canMoveTo(int row, int column)
-        {
-            //Console.WriteLine(this.symbol);
-            //return true;
-            //NEED TO IMPLIMENT
-            //based off the piece symbol, current location and input location to move return bool if it is allowed.
-            //
-            //return true;
-
-            bool isValidMove = false;
-
-            //return true;
-
-            switch (Char.ToLower(this.symbol))
-            {
-                case 'r':
-                    //Rook : Open - Steps on(Vertical, Horizontal) directions
-                    if ((row == this.row && column != this.column) || (row != this.row && column == this.column))
-                    {
-                        isValidMove= true;
-                        break;
-                    }
-                    else
-                    {
-                        break;
-                    }
-
-                case 'k':
-                    //    //Knight : 3 Steps in LShape directions
-                    int[] X = { 2, 1, -1, -2, -2, -1, 1, 2 };
-                    int[] Y = { 1, 2, 2, 1, -1, -2, -2, -1 };
-                    for (int i = 0; i < 8; i++)
-                    {
-                        int offsetX = this.column - column;
-                        int offsetY = this.row - row;
-                        if(offsetY == Y[i] && offsetX == X[i])
-                        {
-                            isValidMove = true;
-                            break;
-                        }
-                    }
-                    break;
-
-                case 'b':
-                //    //Bishop : Open - Steps on(Diagonal) directions
-                    if(Math.Abs(this.row - row) == Math.Abs(this.column - column))
-                    {
-                        isValidMove = true;
-                        break;
-                    }
-                    break;
-
-                case 'q':
-                //    //Queen : Open - Steps on(Vertical, Horizontal, Diagonal) directions
-                    //check straight movement
-                    if((row == this.row && column != this.column) || (row != this.row && column == this.column))
-                    {
-                        isValidMove = true;
-                        break;
-                    }
-                    //check diagonal movement
-                    else if (Math.Abs(this.row - row) == Math.Abs(this.column - column))
-                    {
-                        isValidMove = true;
-                        break;
-                    }
-                    break;
-
-                case 'x':
-                //    //King: One Step on(Vertical, Horizontal, Diagonal) directions
-                if((this.row + 1 == row && this.column == column) || (this.row + 1 == row && this.column + 1 == column) || (this.row == row && this.column + 1 == column) || (this.row - 1 == row && this.column + 1 == column) || (this.row - 1 == row && this.column == column) || (this.row - 1 == row && this.column - 1 == column) || (this.row == row && this.column - 1 == column) || (this.row + 1 == row && this.column - 1 == column))
-                    {
-                        isValidMove = true;
-                        break;
-                    }
-                    break;
-                    
-                case 'p':
-                    //Pawn: One - tep(Vertical) and can go One-Step(Diagonal) to eliminate another piece.
-                    if (this.team == Team.White)
-                    {
-                        if (this.column + 1 == column)
-                        {
-                            isValidMove = true;
-                            break;
-                        }
-                        else
-                            break;
-                    }
-                    else
-                    {
-                        if (this.column - 1 == column)
-                        {
-                            isValidMove = true;
-                            break;
-                        }
-                        else
-                            break;
-                    }
-            }
-            return isValidMove;
-        }
-            public Piece(int row, int column, char symbol, Team team)
+        public Piece(int row, int column, char symbol, Team team, Board board)
         {
             this.row = row;
             this.column = column;
             this.symbol = symbol;
             this.team = team;
+            this.gameBoard = board;
+        }
+
+        public bool canMoveTo(int row, int column)
+        {
+            int rowOffset = Math.Abs(row - this.row);
+            int colOffset = Math.Abs(column - this.column);
+            int colDifference = column - this.column;
+
+            if ((rowOffset == 0) && (colOffset == 0)) return false;
+
+            switch (Char.ToLower(symbol))
+            {
+                case 'r':
+                    if (row == this.row ^ column == this.column)
+                        return !jumpRequired(row, column);
+                    break;
+                case 'k':
+                    if ((rowOffset == 2 && colOffset == 1) || (rowOffset == 1 && colOffset == 2))
+                        return true;
+                    break;
+                case 'b':
+                    if (rowOffset == colOffset)
+                        return !jumpRequired(row, column);
+                    break;
+                case 'q':
+                    if (rowOffset == colOffset)
+                        return !jumpRequired(row, column);
+                    if (row == this.row ^ column == this.column)
+                        return !jumpRequired(row, column);
+                    break;
+                case 'x':
+                    if (rowOffset <= 1 && colOffset <= 1)
+                        return true;
+                    break;
+                case 'p':
+                    if ((colDifference > 0 && this.team == Team.Black) || (colDifference < 0 && this.team == Team.White))
+                        return false;
+                    if (rowOffset == 1)
+                    {
+                        if (colOffset == 1 && gameBoard.grid[row, column].currentlyOccupied && gameBoard.grid[row, column].occupiedBy.team != this.team)
+                            return true;
+                    }
+                    else if (rowOffset == 0)
+                    {
+                        if (colOffset == 2)
+                        {
+                            if (this.column == 1 && this.team == Team.White)
+                                return !jumpRequired(row, column);
+                            if (this.column == 6 && this.team == Team.Black)
+                                return !jumpRequired(row, column);
+                        }
+                        else if (colOffset == 1)
+                            return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+
+        private bool jumpRequired(int row, int column)
+        {
+            int rowDirection;
+            int colDirection;
+            int rowCursor;
+            int colCursor;
+
+            if (row - this.row == 0)
+                rowDirection = 0;
+            else
+                rowDirection = (row - this.row) / Math.Abs(row - this.row);
+
+            if (column - this.column == 0)
+                colDirection = 0;
+            else
+                colDirection = (column - this.column) / Math.Abs(column - this.column);
+
+            rowCursor = this.row;
+            colCursor = this.column;
+
+            do
+            {
+                rowCursor += rowDirection;
+                colCursor += colDirection;
+                if ((rowCursor == row) && (colCursor == column)) break;
+                if (gameBoard.grid[rowCursor, colCursor].currentlyOccupied) return true;
+            } while ((rowCursor != row) || (colCursor != column));
+
+            return false;
         }
 
         public override string ToString()

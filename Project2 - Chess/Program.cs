@@ -23,18 +23,22 @@ namespace Project2___Chess
 
                 //display if there is a king in check.
                 myBoard.testForCheck();
+                do
+                {
+                    //select a piece to move.
+                    myBoard.selectPiece();
 
-                //select a piece to move.
-                myBoard.selectPiece();
+                    //select the destination to move to.
+                } while (myBoard.selectDestination());
 
-                //select the destination to move to.
-                myBoard.selectDestination();
 
                 //move the piece and update the gameboard.
                 myBoard.movePiece();
 
                 //toggles whos turn it is on the gameboard.
                 myBoard.nextTurn();
+
+                myBoard.pawnPromotion();
 
 
                 //check if the game is over and if it is not loop.
