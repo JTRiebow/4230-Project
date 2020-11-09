@@ -135,11 +135,11 @@ namespace ChessBoard
             do
             {
                 selectionIsValid = true;
-                Console.WriteLine("What piece would you like to move? Ex: 2,3");
+                Console.Write("Select Piece>");
                 string input = Console.ReadLine();
                 if (input.Split(',').Length != 2)
                 {
-                    Console.WriteLine("Unrecognizeable input. Please check your format, and try again.");
+                    Console.WriteLine("Unrecognizeable input. Ex: 2,3");
                     selectionIsValid = false;
                 }
                 else
@@ -174,12 +174,12 @@ namespace ChessBoard
             do
             {
                 selectionIsValid = true;
-                Console.WriteLine("Where would you like to move your piece? Ex: 2,3. If you would like to change the selected piece enter \"change\"");
+                Console.Write("Select Destination>");
                 string input = Console.ReadLine();
                 if (input == "change") return true;
                 if (input.Split(',').Length != 2)
                 {
-                    Console.WriteLine("Unrecognizeable input. Please check your format, and try again.");
+                    Console.WriteLine("Unrecognizeable input. Ex: 2,3");
                     selectionIsValid = false;
                 }
                 else
@@ -195,7 +195,7 @@ namespace ChessBoard
                     else if (!selectedPiece.canMoveTo(row, column))
                     {
                         selectionIsValid = false;
-                        Console.WriteLine("That is not a valid move for that piece. Try again.");
+                        Console.WriteLine("That is not a valid move for that piece. If you would like to change the selected piece enter \"change\"");
                     }
                     else if (grid[row, column].occupiedBy?.team == turn)
                     {
